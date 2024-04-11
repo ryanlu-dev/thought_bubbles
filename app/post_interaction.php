@@ -16,6 +16,7 @@
         $prompt_id = $_POST['prompt_id'];
         $student_id = $_POST['student_id'];
         $interaction_type = $_POST['interaction_type'];
+
         $_content = $_POST['content'];
         // timestamp automatically generated
 
