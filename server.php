@@ -1,7 +1,8 @@
 <?php
+session_start();
 $servername = "localhost";
 $username = "root"; // Replace with your MySQL username
-$password = "Jul-1759"; // Replace with your MySQL password
+$password = "temppassword"; // Replace with your MySQL password
 $dbname = "cis4930project";
 
 // Create connection
@@ -12,6 +13,12 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+if (isset($_POST['session_name'])) {
+    $sessionName = $_POST['session_name'];
+} else {
+    $sessionName = ""; // Set default value if session name is not provided
+}
+
 // Function to generate a random session ID (code)
 function generateSessionId($length = 8) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -20,16 +27,6 @@ function generateSessionId($length = 8) {
         $randomString .= $characters[rand(0, strlen($characters) - 1)];
     }
     return $randomString;
-}
-
-if (isset($_GET['code']) && isset($_POST['session_code'])) {
-    $sessionCode = $_GET['code'];
-    $sessionName = $_POST['session_code'];
-    $_SESSION['sessionCode'] = $sessionCode; // Store the session code in a session variable
-    $_SESSION['session_name'] = $sessionName; // Store the session name in a session variable
-    echo $sessionCode;
-} else {
-    echo "Session code or session name not found.";
 }
 
 // Generate a unique session ID
@@ -43,14 +40,13 @@ $sql = "INSERT INTO sessions (Timestamp, SessionCode) VALUES ('$timeStamp', '$se
 
 if ($conn->query($sql) === TRUE) {
     // Store the generated session code in a session variable
-    session_start();
     $_SESSION['sessionCode'] = $sessionCode;
-    $_SESSION['sessionName'] = $sessionName;
+    $_SESSION['session_name'] = $sessionName;
     // Close database connection
     $conn->close();
 
     // Redirect to the admin page
-    header("Location: admin.php?code=$sessionCode&name=$sessionName");
+    header("Location: admin.php");
     exit;
 } else {
     echo "Error: " . $sql . "<br>" . $conn->error;

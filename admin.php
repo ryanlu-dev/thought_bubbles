@@ -2,7 +2,7 @@
 // Establish database connection
 $servername = "localhost";
 $username = "root";
-$password = "Jul-1759";
+$password = "temppassword";
 $dbname = "cis4930project";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -14,14 +14,12 @@ if ($conn->connect_error) {
 
 session_start();
 
-// Retrieve session code from URL parameter
-if (isset($_GET['code']) && isset($_GET['name'])) {
-    $sessionCode = $_GET['code'];
-    $sessionName = $_GET['name'];
-    $_SESSION['sessionCode'] = $sessionCode; // Store the session code in a session variable
-    $_SESSION['sessionName'] = $sessionName; // Store the session name in a session variable
-    echo $sessionCode;
-    echo $sessionName;
+// Retrieve session code from session variable
+if (isset($_SESSION['sessionCode']) && isset($_SESSION['session_name'])) {
+    $sessionCode = $_SESSION['sessionCode'];
+    $sessionName = $_SESSION['session_name'];
+    echo "Session Code : ".$sessionCode."<br>";
+    echo "Session Name : ".$sessionName."<br>";
 } else {
     echo "Session code not found.";
 }
@@ -41,6 +39,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($conn->query($sql) === TRUE) {
             echo "Question added successfully.";
+            $lastInsertedId = $conn->insert_id;
+            echo "Question added successfully. PromptID: " . $lastInsertedId;
+            header("Location: interactions.php");
+            $_SESSION['PromptID'] = $lastInsertedId;
         } else {
             echo "Error: " . $sql . "<br>" . $conn->error;
         }

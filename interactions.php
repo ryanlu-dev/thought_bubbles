@@ -2,7 +2,7 @@
 // Establish database connection
 $servername = "localhost";
 $username = "root";
-$password = "Jul-1759";
+$password = "temppassword";
 $dbname = "cis4930project";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -21,7 +21,7 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['session_name']) && isset
 
     echo "Session Code : ".$sessionCode."<br>";
     echo "Session Name : ".$sessionName."<br>";
-    echo "Session Name : ".$PromptIDValue."<br>";
+    echo "Prompt ID : ".$PromptIDValue."<br>";
 
 } else {
     echo "Session code not found.";
