@@ -1,11 +1,8 @@
 <?php
 // Establish database connection
-$servername = "localhost";
-$username = "root";
-$password = "Jul-1759";
-$dbname = "cis4930project";
+$config = parse_ini_file("../../database/db_config.ini");
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($config["servername"], $config["username"], $config["password"], $config["dbname"]);
 
 // Check connection
 if ($conn->connect_error) {
@@ -27,7 +24,6 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['session_name']) && isset
     echo "Session code not found.";
 }
 
-
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve form data
@@ -38,15 +34,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "All fields are required. Please fill them.";
     } else {
         // Insert the question into the database
-        $sql = "INSERT INTO prompts (Prompt) VALUES ('$questionText')";
+        $sql = "INSERT INTO prompts (Prompt) VALUES (?)";
+        $stmt = $conn->prepare($sql);
 
-        if ($conn->query($sql) === TRUE) {
-            $lastInsertedId = $conn->insert_id;
-            $_SESSION['PromptID'] = $lastInsertedId;
-            header("Location: interactions.php");
+        if ($stmt) {
+            // Bind parameters and execute statement
+            $stmt->bind_param("s", $questionText);
+            if ($stmt->execute()) {
+                $lastInsertedId = $stmt->insert_id;
+                $_SESSION['PromptID'] = $lastInsertedId;
+                $timeStamp = date("Y-m-d H:i:s");
+                $sql2 = "INSERT INTO interactions (SessionID, PromptID, StudentID, InteractionType, Content, Timestamp) VALUES (?, ?, -1, 'Question', ?, ?)";
+                $stmt2 = $conn->prepare($sql2);
+                if ($stmt2) {
+                    $stmt2->bind_param("iiss", $sessionID, $lastInsertedId, $questionText, $timeStamp);
+                    if ($stmt2->execute()) {
+                        echo "Question added successfully.";
+                        header("Location: interactions.php");
+                        exit; // Make sure to exit after redirection
+                    } else {
+                        echo "Error: " . $sql2 . "<br>" . $conn->error;
+                    }
+                } else {
+                    echo "Error: " . $sql2 . "<br>" . $conn->error;
+                }
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            echo "Error: Unable to prepare statement.";
         }
+
+        // Close statement
+        $stmt->close();
     }
 }
 ?>

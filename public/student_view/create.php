@@ -1,3 +1,51 @@
+<?php
+// Start PHP session
+session_start();
+
+// Establish database connection
+$config = parse_ini_file("../../../database/db_config.ini");
+$conn = new mysqli($config["servername"], $config["username"], $config["password"], $config["dbname"]);
+
+if (isset($_SESSION['sessionCode'])) {
+    $sessionCode = $_SESSION['sessionCode'];
+    echo "Session Code : ".$sessionCode."<br>";
+
+} else {
+    echo "Session code not found.";
+}
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Check if form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Check if name and nickname are provided
+    if(isset($_POST['studentName']) && isset($_POST['displayName'])) {
+        // Retrieve submitted data
+        $studentName = $_POST['studentName'];
+        $displayName = $_POST['displayName'];
+
+        // Insert the student data into the database
+        $sql = "INSERT INTO students (StudentName, DisplayName) VALUES ('$studentName', '$displayName')";
+
+        if ($conn->query($sql) === TRUE) {
+            $lastInsertedId = $conn->insert_id;
+            $_SESSION['StudentID'] = $lastInsertedId;
+            $_SESSION['sessionCode'] = $sessionCode;
+            echo "New record created successfully";
+			header('Location: session.php');
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+    } else {
+        // Handle case where name or nickname is missing
+        echo "Please enter both name and nickname.";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -37,6 +85,7 @@
 									/>
 								</svg>
 							</div>
+							<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
 							<div class="row mb-3">
 								<div class="input-group">
 									<div class="input-group-text">@</div>
@@ -44,6 +93,7 @@
 										type="text"
 										class="form-control"
 										placeholder="Screen Name"
+										name="displayName"
 									/>
 								</div>
 								<p>
@@ -59,16 +109,18 @@
 										type="text"
 										class="form-control"
 										placeholder="Student Name"
+										name="studentName"
 									/>
 								</div>
-							</div>
+							</div>	
 							<button
-								type="button"
+								type="submit"
 								href="waitingroom.html"
 								class="btn btn-primary"
 							>
 								Next
 							</button>
+							</form>
 						</div>
 					</div>
 				</div>

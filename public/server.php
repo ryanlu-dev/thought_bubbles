@@ -1,12 +1,10 @@
 <?php
 session_start();
-$servername = "localhost";
-$username = "root"; // Replace with your MySQL username
-$password = "Jul-1759"; // Replace with your MySQL password
-$dbname = "cis4930project";
 
 // Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$config = parse_ini_file("../../database/db_config.ini");
+
+$conn = new mysqli($config["servername"], $config["username"], $config["password"], $config["dbname"]);
 
 // Check connection
 if ($conn->connect_error) {
