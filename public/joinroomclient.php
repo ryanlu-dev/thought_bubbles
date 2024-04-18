@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 // Establish database connection
 $config = parse_ini_file("../../database/db_config.ini");
 
@@ -14,19 +16,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve submitted session code
     $submittedCode = $_POST['sessionCode'];
 
-    // Query the database to check if the session code exists
-    $sql = "SELECT * FROM sessions WHERE SessionCode = '$submittedCode'";
-    $result = $conn->query($sql);
+    // Query the database to check if the session code exists and fetch the sessionID
+    $sql = "SELECT SessionID FROM sessions WHERE SessionCode = ?";
+    $stmt = $conn->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("s", $submittedCode);
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                // Session code exists, fetch sessionID
+                $row = $result->fetch_assoc();
+                $sessionID = $row['SessionID'];
 
-    if ($result->num_rows > 0) {
-        // Session code exists, redirect user to join the session
-        $_SESSION['session_code'] = $submittedCode;
-        header("Location: student_view/create.php");
-        exit;
+                // Redirect user to join the session
+                $_SESSION['sessionCode'] = $submittedCode;
+                $_SESSION['sessionID'] = $sessionID;
+                header("Location: student_view/create.php");
+                exit;
+            } else {
+                // Session code doesn't exist, show an error message
+                echo "Invalid session code. Please try again.";
+                header("Location: joinroomclient.php");
+                exit;
+            }
+        } else {
+            echo "Error executing query: " . $stmt->error;
+        }
+        $stmt->close();
     } else {
-        // Session code doesn't exist, show an error message
-        echo "Invalid session code. Please try again.";
-        header ("Location: joinroomclient.php");
+        echo "Error preparing statement: " . $conn->error;
     }
 }
 ?>

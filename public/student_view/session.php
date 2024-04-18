@@ -12,12 +12,16 @@ if ($conn->connect_error) {
 session_start();
 
 // Retrieve session code from session variable
-if (isset($_SESSION['StudentID']) && isset($_SESSION['SessionID'])) {
+if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_SESSION['studentName']) && isset($_SESSION['sessionID'])) {
     $StudentID = $_SESSION['StudentID'];
-    $sessionID = $_SESSION['SessionID'];
+    $displayName = $_SESSION['displayName'];
+    $StudentName = $_SESSION['studentName'];
+    $sessionID = $_SESSION['sessionID'];
+
     echo "Student ID : " . $StudentID . "<br>";
     echo "Session ID : " . $sessionID . "<br>";
-
+    echo "Session displayName : " . $displayName . "<br>";
+    echo "Session StudentName : " . $StudentName . "<br>";
     // Retrieve the question for the session from the database
     $sql = "SELECT Content FROM interactions WHERE SessionID = ? AND InteractionType = 'Question' ORDER BY Timestamp DESC LIMIT 1";
     $stmt = $conn->prepare($sql);
@@ -97,3 +101,4 @@ $conn->close();
         <textarea id="answer" name="answer" rows="4" cols="50" required></textarea><br>
         <button type="submit">Submit Answer</button>
 </form>
+

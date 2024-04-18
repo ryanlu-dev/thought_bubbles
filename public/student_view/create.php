@@ -8,11 +8,18 @@ $conn = new mysqli($config["servername"], $config["username"], $config["password
 
 if (isset($_SESSION['sessionCode'])) {
     $sessionCode = $_SESSION['sessionCode'];
-    echo "Session Code : ".$sessionCode."<br>";
-
+	echo "Session Code : ".$sessionCode."<br>";
 } else {
     echo "Session code not found.";
 }
+
+if (isset($_SESSION['sessionID'])) {
+    $sessionID = $_SESSION['sessionID'];
+	echo "Session Code : ".$sessionID."<br>";
+} else {
+    echo "Session ID not found ";
+}
+
 
 // Check connection
 if ($conn->connect_error) {
@@ -31,9 +38,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "INSERT INTO students (StudentName, DisplayName) VALUES ('$studentName', '$displayName')";
 
         if ($conn->query($sql) === TRUE) {
-            $lastInsertedId = $conn->insert_id;
-            $_SESSION['StudentID'] = $lastInsertedId;
-            $_SESSION['sessionCode'] = $sessionCode;
+			$specificIdResult = $conn->query("SELECT StudentID FROM students WHERE StudentName = '$studentName' AND DisplayName = '$displayName'");
+            $specificIdRow = $specificIdResult->fetch_assoc();
+            $specificId = $specificIdRow['StudentID'];
+			$_SESSION['StudentID'] = $specificId;
+			$_SESSION['sessionID'] = $sessionID;
+			$_SESSION['sessionCode'] = $sessionCode;
+			$_SESSION['studentName'] = $studentName;
+			$_SESSION['displayName'] = $displayName;
             echo "New record created successfully";
 			header('Location: session.php');
         } else {
