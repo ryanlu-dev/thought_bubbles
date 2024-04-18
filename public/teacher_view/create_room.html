@@ -23,7 +23,9 @@
         <div class="maintitle text-center">
           <h1 class="display-4">Thought Bubbles</h1>
           <p class="lead">Classroom discussion redefined.</p>
-          <hr class="my-4">
+        </div>
+        <hr class="my-4">
+        <div class="container">
           <p class="lead">Create a Room:</p>
           <form method="post" action="server.php">
             <div class="form-group">
@@ -31,18 +33,18 @@
               <input class="form-control"  type="text" name="session_name" id="session_name" placeholder="Enter Room Name">
             </div>
 
-          <!--<a class="btn btn-primary btn-lg mr-4" href="create_room.html" role="button" id="createRoomBtn">Create a Room</a>
-          <a class="btn btn-secondary btn-lg" href="#" role="button" id="joinRoomBtn">Join a Room</a>
-          -->
+            <!--<a class="btn btn-primary btn-lg mr-4" href="create_room.html" role="button" id="createRoomBtn">Create a Room</a>
+            <a class="btn btn-secondary btn-lg" href="#" role="button" id="joinRoomBtn">Join a Room</a>
+            -->
 
-          <a class="btn btn-primary btn-lg mr-4" href="#" role="button" id="finalizeRoomBtn">Finish Creating Room</a>
-        </from>
+            <button class="btn btn-primary btn-lg mr-4" type="submit" id="finalizeRoomBtn">Finish Creating Room</button>
+          </form>
         </div>
       </div>
       <script>
         // JavaScript to submit the form when the button is clicked
         document.getElementById('finalizeRoomBtn').addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent default link behavior
+            //event.preventDefault(); // Prevent default link behavior
             
             // Submit the form
             document.getElementById('createRoomForm').submit();

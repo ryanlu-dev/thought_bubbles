@@ -2,7 +2,7 @@
 session_start();
 
 // Establish database connection
-$config = parse_ini_file("../../database/db_config.ini");
+$config = parse_ini_file("../../../database/db_config.ini");
 
 $conn = new mysqli($config["servername"], $config["username"], $config["password"], $config["dbname"]);
 
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Redirect user to join the session
                 $_SESSION['sessionCode'] = $submittedCode;
                 $_SESSION['sessionID'] = $sessionID;
-                header("Location: student_view/create.php");
+                header("Location: create.php");
                 exit;
             } else {
                 // Session code doesn't exist, show an error message

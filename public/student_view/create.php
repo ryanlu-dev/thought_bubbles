@@ -34,6 +34,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $studentName = $_POST['studentName'];
         $displayName = $_POST['displayName'];
 
+		// Check if
+
         // Insert the student data into the database
         $sql = "INSERT INTO students (StudentName, DisplayName) VALUES ('$studentName', '$displayName')";
 

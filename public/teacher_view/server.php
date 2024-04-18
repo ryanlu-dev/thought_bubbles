@@ -2,7 +2,7 @@
 session_start();
 
 // Create connection
-$config = parse_ini_file("../../database/db_config.ini");
+$config = parse_ini_file("../../../database/db_config.ini");
 
 $conn = new mysqli($config["servername"], $config["username"], $config["password"], $config["dbname"]);
 
