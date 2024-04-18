@@ -15,7 +15,7 @@ if (isset($_SESSION['sessionCode'])) {
 
 if (isset($_SESSION['sessionID'])) {
 	$sessionID = $_SESSION['sessionID'];
-	echo "Session Code : ".$sessionID."<br>";
+	echo "Session ID : ".$sessionID."<br>";
 } else {
 	echo "Session ID not found ";
 }
@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous"/>
-	<link rel="stylesheet" href="style.css" />
+	<link rel="stylesheet" href="../style.css" />
 	<title>Thought Bubbles</title>
 </head>
 <body>
@@ -83,13 +83,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 							<div class="row mb-3">
 								<div class="input-group">
 									<div class="input-group-text">@</div>
-										<input type="text" class="form-control" placeholder="Screen Name" name="displayName"/>
+										<input type="text" class="form-control" placeholder="Screen Name" name="displayName" required/>
 									</div>
 									<p><small class="text-secondary">This will show up on the screen</small></p>
 								</div>
 								<div class="row mb-3">
 									<div class="input-group">
-										<input type="text" class="form-control" placeholder="Student Name" name="studentName"/>
+										<input type="text" class="form-control" placeholder="Student Name" name="studentName" required/>
 									</div>
 								</div>	
 								<button type="submit" href="waitingroom.html" class="btn btn-primary">Next</button>

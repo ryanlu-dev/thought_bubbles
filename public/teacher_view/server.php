@@ -38,7 +38,7 @@ if ($conn->query($sql) === TRUE) {
 	$_SESSION['sessionCode'] = $sessionCode;
 	$_SESSION['session_name'] = $sessionName;
 	$lastInsertedId = $conn->insert_id;
-	$_SESSION['SessionID'] = $lastInsertedId;
+	$_SESSION['sessionID'] = $lastInsertedId;
 	// Close database connection
 	$conn->close();
 
