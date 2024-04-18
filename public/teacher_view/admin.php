@@ -6,68 +6,45 @@ $conn = new mysqli($config["servername"], $config["username"], $config["password
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+	die("Connection failed: " . $conn->connect_error);
 }
 
 session_start();
 
 // Retrieve session code from session variable
 if (isset($_SESSION['sessionCode']) && isset($_SESSION['session_name']) && isset($_SESSION['SessionID'])) {
-    $sessionCode = $_SESSION['sessionCode'];
-    $sessionName = $_SESSION['session_name'];
-    $sessionID = $_SESSION['SessionID'];
-    echo "Session Code : ".$sessionCode."<br>";
-    echo "Session Name : ".$sessionName."<br>";
-    echo "Session ID : ".$sessionID."<br>";
+	$sessionCode = $_SESSION['sessionCode'];
+	$sessionName = $_SESSION['session_name'];
+	$sessionID = $_SESSION['SessionID'];
+	echo "Session Code : ".$sessionCode."<br>";
+	echo "Session Name : ".$sessionName."<br>";
+	echo "Session ID : ".$sessionID."<br>";
 
 } else {
-    echo "Session code not found.";
+	echo "Session code not found.";
 }
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Retrieve form data
-    $questionText = $_POST['question_text'];
+	// Retrieve form data
+	$questionText = $_POST['question_text'];
 
-    // Validate form data (add more validation as needed)
-    if (empty($questionText)) {
-        echo "All fields are required. Please fill them.";
-    } else {
-        // Insert the question into the database
-        $sql = "INSERT INTO prompts (Prompt) VALUES (?)";
-        $stmt = $conn->prepare($sql);
+	// Validate form data (add more validation as needed)
+	if (empty($questionText)) {
+		echo "All fields are required. Please fill them.";
+	} else {
+		// Insert the question into the database
+		$sql = "INSERT INTO Interactions VALUES (DEFAULT, -1, ?, -1, 'prompt', ?, DEFAULT)";
+		$stmt = $conn->prepare($sql);
 
-        if ($stmt) {
-            // Bind parameters and execute statement
-            $stmt->bind_param("s", $questionText);
-            if ($stmt->execute()) {
-                $lastInsertedId = $stmt->insert_id;
-                $_SESSION['PromptID'] = $lastInsertedId;
-                $timeStamp = date("Y-m-d H:i:s");
-                $sql2 = "INSERT INTO interactions (SessionID, PromptID, StudentID, InteractionType, Content, Timestamp) VALUES (?, ?, -1, 'Question', ?, ?)";
-                $stmt2 = $conn->prepare($sql2);
-                if ($stmt2) {
-                    $stmt2->bind_param("iiss", $sessionID, $lastInsertedId, $questionText, $timeStamp);
-                    if ($stmt2->execute()) {
-                        echo "Question added successfully.";
-                        header("Location: interactions.php");
-                        exit; // Make sure to exit after redirection
-                    } else {
-                        echo "Error: " . $sql2 . "<br>" . $conn->error;
-                    }
-                } else {
-                    echo "Error: " . $sql2 . "<br>" . $conn->error;
-                }
-            } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
-            }
-        } else {
-            echo "Error: Unable to prepare statement.";
-        }
-
-        // Close statement
-        $stmt->close();
-    }
+		if ($stmt) {
+			// Bind parameters and execute statement
+			$stmt->bind_param("is", $sessionID, $questionText);
+			$stmt->execute();
+		}
+		// Close statement
+		$stmt->close();
+	}
 }
 ?>
 
