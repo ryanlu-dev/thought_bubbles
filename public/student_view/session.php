@@ -144,7 +144,8 @@ getMsg();
 getLatestQuestion();
 
 var intervalID = window.setInterval(getMsg, 2500);
-var intervalID = window.setInterval(getLatestQuestion, 2500);
+var intervalID2 = window.setInterval(getLatestQuestion, 2500);
+
 
 </script>
 </html>
