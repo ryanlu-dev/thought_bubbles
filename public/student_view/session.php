@@ -22,29 +22,7 @@ if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_
 	echo "Session ID : " . $sessionID . "<br>";
 	echo "Session displayName : " . $displayName . "<br>";
 	echo "Session StudentName : " . $StudentName . "<br>";
-	// Retrieve the (latest) question for the session from the database
-	$sql = "SELECT Content FROM interactions WHERE SessionID = ? AND InteractionType = 'Question' ORDER BY Timestamp DESC LIMIT 1";
-	$stmt = $conn->prepare($sql);
-	if ($stmt) {
-		$stmt->bind_param("i", $sessionID);
-		if ($stmt->execute()) {
-			$result = $stmt->get_result();
-			if ($result->num_rows > 0) {
-				$row = $result->fetch_assoc();
-				$question = $row['Content'];
-				echo "<h2>Question:</h2>";
-				echo "<p>" . $question . "</p>";
-			} else {
-                include 'waitingroom.html';
-				echo "<style>#mainContent { display: none; }</style>";
-			}
-		} else {
-			echo "Error executing query: " . $stmt->error;
-		}
-		$stmt->close();
-	} else {
-		echo "Error preparing statement: " . $conn->error;
-	}
+	// Retrieve the (latest) question for the session from the database	
 } else {
 	echo "Session code not found.";
 }
@@ -94,6 +72,9 @@ $conn->close();
 ?>
 
 <html>
+<div id="questionSection">
+	
+</div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 <!-- Form for answering the question -->
 <div id="mainContent">
@@ -149,9 +130,21 @@ function getMsg() {
 		}
 	});
 }
+function getLatestQuestion() {
+    $.ajax({
+        type: "GET",
+        url: "../server/getLatestQuestion.php",
+        success: function (response) {
+            $("#questionSection").html(response);
+        }
+    });
+}
 
 getMsg();
+getLatestQuestion();
 
 var intervalID = window.setInterval(getMsg, 2500);
+var intervalID = window.setInterval(getLatestQuestion, 2500);
+
 </script>
 </html>
