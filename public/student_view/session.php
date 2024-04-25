@@ -35,7 +35,8 @@ if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_
 				echo "<h2>Question:</h2>";
 				echo "<p>" . $question . "</p>";
 			} else {
-				echo "No question yet available for this session.";
+                include 'waitingroom.html';
+				echo "<style>#mainContent { display: none; }</style>";
 			}
 		} else {
 			echo "Error executing query: " . $stmt->error;
@@ -95,6 +96,7 @@ $conn->close();
 <html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 <!-- Form for answering the question -->
+<div id="mainContent">
 <form method="post">
 <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
 <input type="hidden" name="interactionType" value="message">
@@ -105,6 +107,7 @@ $conn->close();
 
 <div id="responseArea">
 	
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
