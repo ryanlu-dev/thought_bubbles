@@ -65,6 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		<textarea id="question_text" name="question_text" rows="4" cols="50" required></textarea><br>
 		<button type="submit">Add Free Response Question</button>
 	</form>
+	<a class="btn btn-primary" href="summary.php" role="button" id="finishSession">Finish session</a>
 	<div class="container" id="questionArea">
 	
 	</div>
