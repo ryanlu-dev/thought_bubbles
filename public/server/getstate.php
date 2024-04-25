@@ -19,9 +19,9 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['sessionID'])) {
 }
 
 // Get array of all interactions within current session
-$sql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType <> 'Question'";
+$sql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType <> 'Question' AND interactions.Timestamp > (SELECT MAX(Timestamp) FROM interactions WHERE SessionID=? AND interactions.InteractionType = 'Question')";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $sessionID);
+$stmt->bind_param('ii', $sessionID,$sessionID);
 $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_all(MYSQLI_ASSOC);
