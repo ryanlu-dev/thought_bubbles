@@ -66,11 +66,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		<button type="submit">Add Free Response Question</button>
 	</form>
 	<a class="btn btn-primary" href="summary.php" role="button" id="finishSession">Finish session</a>
-	<div class="container" id="questionArea">
-	
+	<div class='container-fluid'>
+		<div class="card text-center">
+			<div class="card-header">
+				Current Discussion Question
+			</div>
+			<div class="card-body">
+				<h1 class="card-title" id="qtitle">Waiting...</h5>
+				<!-- <p class="card-text">[extra clarification (optional)]</p> -->
+			</div>
+			<div class="card-footer text-muted">
+				<a href="#" class="btn btn-secondary">Add Another Question</a>
+				<a href="summary.php" class="btn btn-primary">Submit All Questions</a>
+			</div>
+		</div>
 	</div>
-	<div class="container" id="responseArea">
-
+	<div class="container-fluid">
+		<div id="responseArea">
+		</div>
 	</div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
@@ -84,20 +97,9 @@ function getQuestion() {
 			response = JSON.parse(response);
 			var html = "";
 			if(response) {
-				html += "<div class='container'>";
-					html += "<div class='text-center'>";
-						html += "<h4 class='display-4'>";
-							html += response;
-						html += "</h4>";
-					html += "</div>";
-				html += "</div>";
-				html += "<hr class='my-4'>";
-			} else {
-				html += "<div class='alert alert-warning'>";
-				html += "No question yet!";
-				html += "</div>";
+				html += response;
 			}
-			$("#questionArea").html(html);
+			$("#qtitle").html(html);
 		}
 	});
 }

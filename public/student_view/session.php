@@ -72,9 +72,21 @@ $conn->close();
 
 <html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-<div id="questionArea">
-
-</div>
+<div class='container-fluid'>
+		<div class="card text-center">
+			<div class="card-header">
+				Current Discussion Question
+			</div>
+			<div class="card-body">
+				<h1 class="card-title" id="qtitle">Waiting...</h5>
+				<!-- <p class="card-text">[extra clarification (optional)]</p> -->
+			</div>
+			<div class="card-footer text-muted">
+				<a href="#" class="btn btn-secondary">Add Another Question</a>
+				<a href="#" class="btn btn-primary">Submit All Questions</a>
+			</div>
+		</div>
+	</div>
 <!-- Form for answering the question -->
 <form method="post">
 <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
@@ -98,20 +110,9 @@ function getQuestion() {
 			response = JSON.parse(response);
 			var html = "";
 			if(response) {
-				html += "<div class='container'>";
-					html += "<div class='text-center'>";
-						html += "<h4 class='display-4'>";
-							html += response;
-						html += "</h4>";
-					html += "</div>";
-				html += "</div>";
-				html += "<hr class='my-4'>";
-			} else {
-				html += "<div class='alert alert-warning'>";
-				html += "No question yet!";
-				html += "</div>";
+				html += response;
 			}
-			$("#questionArea").html(html);
+			$("#qtitle").html(html);
 		}
 	});
 }

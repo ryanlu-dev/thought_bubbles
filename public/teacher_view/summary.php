@@ -24,16 +24,22 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['session_name']) && isset
 	echo "Session code not found.";
 }
 
-$sql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType <> 'Question'";
+// $sql="SELECT interactions.InteractionID, interactions.ParentID, students.StudentName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType <> 'Question'";
+$sql = "SELECT DISTINCT StudentID FROM interactions WHERE SessionID=? AND StudentID <> -1";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $sessionID);
 $stmt->execute();
 $result = $stmt->get_result();
-$row = $result->fetch_all(MYSQLI_ASSOC);
-$result->free_result();
-$conn->close();
+
+$studentIDs = array();
+if ($result->num_rows > 1) {
+    while ($row = $result->fetch_assoc()) {
+        $studentIDs.push($row['StudentID']);
+    }
+}
 
 ?>
+
 <html>
 <head>
 <meta charset="utf-8">
@@ -63,15 +69,13 @@ $conn->close();
                 </tr>
             </thead>
             <tbody id="tbody">
-                <?php 
-
+                <?php
                 ?>
             </tbody>
         </table>
     </div>
-    <script>
-
-    </script>
+    <div id="output">
+    </div>
 </body>
 </html>
 
