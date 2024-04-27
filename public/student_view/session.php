@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	if ($stmt) {
 		$stmt->bind_param("iiiss",$sessionID, $PromptID, $StudentID, $interactionType, $answer);
 		if ($stmt->execute()) {
-			echo "Answer submitted successfully.";
+			// echo "Answer submitted successfully.";
 		} else {
 			echo "Error executing query: " . $stmt->error;
 		}
@@ -82,8 +82,6 @@ $conn->close();
 				<!-- <p class="card-text">[extra clarification (optional)]</p> -->
 			</div>
 			<div class="card-footer text-muted">
-				<a href="#" class="btn btn-secondary">Add Another Question</a>
-				<a href="#" class="btn btn-primary">Submit All Questions</a>
 			</div>
 		</div>
 	</div>

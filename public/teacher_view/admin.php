@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		echo "All fields are required. Please fill them.";
 	} else {
 		// Insert the question into the database
-		$sql = "INSERT INTO interactions VALUES (DEFAULT, -1, ?, -1, 'Question', ?, DEFAULT)";
+		$sql = "INSERT INTO interactions VALUES (DEFAULT, -1, ?, -1, 'question', ?, DEFAULT)";
 		$stmt = $conn->prepare($sql);
 
 		if ($stmt) {

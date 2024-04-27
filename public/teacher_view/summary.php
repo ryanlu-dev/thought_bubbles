@@ -24,20 +24,75 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['session_name']) && isset
 	echo "Session code not found.";
 }
 
-// $sql="SELECT interactions.InteractionID, interactions.ParentID, students.StudentName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType <> 'Question'";
-$sql = "SELECT DISTINCT StudentID FROM interactions WHERE SessionID=? AND StudentID <> -1";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $sessionID);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$studentIDs = array();
-if ($result->num_rows > 1) {
-    while ($row = $result->fetch_assoc()) {
-        $studentIDs.push($row['StudentID']);
-    }
+function getStudentName($studentID) {
+    $sql = "SELECT StudentName FROM students WHERE StudentID=?";
+    global $conn;
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $studentID);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $name = $res->fetch_assoc()['StudentName'];
+    //echo $name;
+    return $name;
 }
 
+// $sql="SELECT interactions.InteractionID, interactions.ParentID, students.StudentName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType <> 'Question'";
+function getDistinctStudentIDs() {
+    $sql = "SELECT DISTINCT StudentID FROM interactions WHERE SessionID=? AND StudentID <> -1";
+    global $conn;
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $sessionID);
+	$sessionID = $_SESSION['sessionID'];
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $distinct = array();
+    while ($id = $result->fetch_assoc()) {
+        array_push($distinct, $id['StudentID']);
+    }
+    //print_r($distinct);
+    return $distinct;
+}
+
+
+function getNumMessages($studentID) {
+    $sql = "SELECT COUNT(InteractionID) AS Messages FROM interactions WHERE StudentID=? AND SessionID=? AND InteractionType='message'";
+    global $conn;
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ii', $studentID, $sessionID);
+	$sessionID = $_SESSION['sessionID'];
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $numMsg = $res->fetch_assoc()['Messages'];
+    $stmt->free_result();
+    //echo $numMsg;
+    return $numMsg;
+}
+
+function getNumReactsGiven($studentID) {
+    $sql = "SELECT COUNT(InteractionID) AS ReactsGiven FROM interactions WHERE StudentID=? AND SessionID=? AND InteractionType='reaction'";
+    global $conn;
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ii', $studentID, $sessionID);
+	$sessionID = $_SESSION['sessionID'];
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $numReactsGiven = $res->fetch_assoc()['ReactsGiven'];
+    $stmt->free_result();
+    return $numReactsGiven;
+}
+
+function getNumReplies($studentID) {
+    $sql = "SELECT COUNT(InteractionID) AS NumReplies FROM interactions WHERE StudentID=? AND SessionID=? AND InteractionType='reply'";
+    global $conn;
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ii', $studentID, $sessionID);
+	$sessionID = $_SESSION['sessionID'];
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $numReplies = $res->fetch_assoc()['NumReplies'];
+    $stmt->free_result();
+    return $numReplies;
+}
 ?>
 
 <html>
@@ -45,7 +100,7 @@ if ($result->num_rows > 1) {
 <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
     <title>Summary</title>
     
     <!-- Browser Tab Icons -->
@@ -64,12 +119,26 @@ if ($result->num_rows > 1) {
                     <th scope="col">StudentID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Messages</th>
-                    <th scope="col">Gave reacts</th>
-                    <th scope="col">Received reacts</th>
+                    <th scope="col">Reacts given</th>
+                    <th scope="col">Replies</th>
                 </tr>
             </thead>
             <tbody id="tbody">
                 <?php
+                    $distincts = getDistinctStudentIDs();
+                    foreach($distincts as $sid) {
+                        $name = getStudentName($sid);
+                        $numMsg = getNumMessages($sid);
+                        $numReactsGiven = getNumReactsGiven($sid);
+                        $numReplies = getNumReplies($sid);
+                        echo "<tr>";
+                            echo "<th scope='row'>" . $sid . "</th>";
+                            echo "<td>" . $name . "</td>";
+                            echo "<td>" . $numMsg . "</td>";
+                            echo "<td>" . $numReactsGiven . "</td>";
+                            echo "<td>" . $numReplies . "</td>";
+                        echo "</tr>";
+                    }
                 ?>
             </tbody>
         </table>
