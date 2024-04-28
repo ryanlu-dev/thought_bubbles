@@ -22,28 +22,6 @@ if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_
 	echo "Session ID : " . $sessionID . "<br>";
 	echo "Session displayName : " . $displayName . "<br>";
 	echo "Session StudentName : " . $StudentName . "<br>";
-	// Retrieve the (latest) question for the session from the database
-	$sql = "SELECT Content FROM interactions WHERE SessionID = ? AND InteractionType = 'Question' ORDER BY Timestamp DESC LIMIT 1";
-	$stmt = $conn->prepare($sql);
-	if ($stmt) {
-		$stmt->bind_param("i", $sessionID);
-		if ($stmt->execute()) {
-			$result = $stmt->get_result();
-			if ($result->num_rows > 0) {
-				$row = $result->fetch_assoc();
-				$question = $row['Content'];
-				echo "<h2>Question:</h2>";
-				echo "<p>" . $question . "</p>";
-			} else {
-				echo "No question yet available for this session.";
-			}
-		} else {
-			echo "Error executing query: " . $stmt->error;
-		}
-		$stmt->close();
-	} else {
-		echo "Error preparing statement: " . $conn->error;
-	}
 } else {
 	echo "Session code not found.";
 }
@@ -78,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	if ($stmt) {
 		$stmt->bind_param("iiiss",$sessionID, $PromptID, $StudentID, $interactionType, $answer);
 		if ($stmt->execute()) {
-			echo "Answer submitted successfully.";
+			// echo "Answer submitted successfully.";
 		} else {
 			echo "Error executing query: " . $stmt->error;
 		}
@@ -94,6 +72,19 @@ $conn->close();
 
 <html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+<div class='container-fluid'>
+		<div class="card text-center">
+			<div class="card-header">
+				Current Discussion Question
+			</div>
+			<div class="card-body">
+				<h1 class="card-title" id="qtitle">Waiting...</h5>
+				<!-- <p class="card-text">[extra clarification (optional)]</p> -->
+			</div>
+			<div class="card-footer text-muted">
+			</div>
+		</div>
+	</div>
 <!-- Form for answering the question -->
 <form method="post">
 <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
@@ -109,6 +100,21 @@ $conn->close();
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 <script>
+function getQuestion() {
+	$.ajax({
+		type: "GET",
+		url: "../server/getquestion.php",
+		success: function (response) {
+			response = JSON.parse(response);
+			var html = "";
+			if(response) {
+				html += response;
+			}
+			$("#qtitle").html(html);
+		}
+	});
+}
+
 function getMsg() {
 	$.ajax({
 		type: "GET",
@@ -139,7 +145,7 @@ function getMsg() {
 				});
 			} else {
 				html += '<div class="alert alert-warning">';
-				html += 'No records found!';
+				html += 'No messages yet!';
 				html += '</div>';
 			}
 			$("#responseArea").html(html);
@@ -147,8 +153,10 @@ function getMsg() {
 	});
 }
 
+getQuestion();
 getMsg();
 
+var q = window.setInterval(getQuestion, 2500);
 var intervalID = window.setInterval(getMsg, 2500);
 </script>
 </html>
