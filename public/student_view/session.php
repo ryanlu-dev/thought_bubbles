@@ -103,9 +103,14 @@ $conn->close();
 		</button>
 		<h5 id="content-to-reply" class="card-title text-center font-weight-normal m-2"></h5>
 	</div>
-	<form method="get" action="post_reply.php">
+	<form method="POST" action="post_reply.php" id="post-reply-form">
+		<input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
+		<input type="hidden" name="StudentID" value="<?php echo $StudentID; ?>">
+		<input type="hidden" name="studentName" value="<?php echo $studentName; ?>">
+		<input type="hidden" name="displayName" value="<?php echo $displayName; ?>">
+		<input type="hidden" name="interactionType" value="reply">
 		<div class="card-body form-group">
-			<textarea class="form-control" id="reply-textbox" rows="3"></textarea>
+			<textarea class="form-control" id="reply-textbox" rows="3" name="reply-content" required></textarea>
 		</div>
 		<div class="text-center">
 			<button class="btn btn-primary" type="submit">Submit Reply</button>
@@ -124,13 +129,13 @@ function closeReplyBox() {
 	$('#replyBox').addClass("d-none");
 }
 
-function openReplyBox(author, content) {
-	console.log(author);
-	console.log(content);
+function openReplyBox(author, content, interactionID) {
 	$('#replyOverlay').removeClass("d-none");
 	$('#replyBox').removeClass("d-none");
 	var html = "Reply to " + "<em>" + author + "</em>" + "'\s response: " + "\"" + "<span class='font-weight-bold'>" + content + "</span>" + "\"";
+	var formInput = "<input type='hidden' name='parentID' value='" + interactionID + "'>";
 	$('#content-to-reply').html(html);
+	$('#post-reply-form').prepend(formInput);
 }
 
 function getQuestion() {
@@ -165,7 +170,7 @@ function getMsg() {
 								html += "<div class='row'>";
 									html += "<div class='col'>";
 										html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
-											html += "<button class='btn btn-primary' type='button' onclick='openReplyBox(\"" + value.DisplayName + "\", \"" + value.Content + "\")'>Reply</button>";
+											html += "<button class='btn btn-primary' type='button' onclick='openReplyBox(\"" + value.DisplayName + "\", \"" + value.Content + "\", \"" + value.InteractionID + "\")'>Reply</button>";
 										html += "</div>";
 									html += "</div>";
 									html += "<div class='col'>";
