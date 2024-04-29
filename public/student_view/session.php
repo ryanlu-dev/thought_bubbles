@@ -72,6 +72,7 @@ $conn->close();
 
 <html>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+<link rel="stylesheet" href="../style.css">
 <div class='container-fluid'>
 		<div class="card text-center">
 			<div class="card-header">
@@ -94,12 +95,44 @@ $conn->close();
 <button type="submit">Submit Answer</button>
 </form>
 
+<div id="replyOverlay" class="overlay-div overflow-hidden d-none"></div>
+<div id="replyBox" class="card container overlay-box d-none p-0">
+	<div class="card-header">
+		<button type="button" class="close" aria-label="Close" onclick="closeReplyBox()">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<h5 id="content-to-reply" class="card-title text-center font-weight-normal m-2"></h5>
+	</div>
+	<form method="get" action="post_reply.php">
+		<div class="card-body form-group">
+			<textarea class="form-control" id="reply-textbox" rows="3"></textarea>
+		</div>
+		<div class="text-center">
+			<button class="btn btn-primary" type="submit">Submit Reply</button>
+		</div>
+	</form>
+</div>
+
 <div id="responseArea">
 	
 </div>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 <script>
+function closeReplyBox() {
+	$('#replyOverlay').addClass("d-none");
+	$('#replyBox').addClass("d-none");
+}
+
+function openReplyBox(author, content) {
+	console.log(author);
+	console.log(content);
+	$('#replyOverlay').removeClass("d-none");
+	$('#replyBox').removeClass("d-none");
+	var html = "Reply to " + "<em>" + author + "</em>" + "'\s response: " + "\"" + "<span class='font-weight-bold'>" + content + "</span>" + "\"";
+	$('#content-to-reply').html(html);
+}
+
 function getQuestion() {
 	$.ajax({
 		type: "GET",
@@ -132,7 +165,7 @@ function getMsg() {
 								html += "<div class='row'>";
 									html += "<div class='col'>";
 										html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
-											html += "<button class='btn btn-primary' type='button'>Reply</button>";
+											html += "<button class='btn btn-primary' type='button' onclick='openReplyBox(\"" + value.DisplayName + "\", \"" + value.Content + "\")'>Reply</button>";
 										html += "</div>";
 									html += "</div>";
 									html += "<div class='col'>";
