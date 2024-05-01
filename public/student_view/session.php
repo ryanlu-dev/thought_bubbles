@@ -32,8 +32,6 @@ if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_
 			if ($result->num_rows > 0) {
 				$row = $result->fetch_assoc();
 				$question = $row['Content'];
-				echo "<h2>Question:</h2>";
-				echo "<p>" . $question . "</p>";
 			} else {
 				echo "No question yet available for this session.";
 			}
@@ -92,63 +90,90 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $conn->close();
 ?>
 
-<html>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-<!-- Form for answering the question -->
-<form method="post">
-<input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
-<input type="hidden" name="interactionType" value="message">
-<label for="answer">Your Answer:</label><br>
-<textarea id="answer" name="answer" rows="4" cols="50" required></textarea><br>
-<button type="submit">Submit Answer</button>
-</form>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <link
+                rel="stylesheet"
+                href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+                integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+                crossorigin="anonymous"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+        <script>
+            function getMsg() {
+                $.ajax({
+                    type: "GET",
+                    url: "../server/getstate.php",
+                    success: function (response) {
+                        response = JSON.parse(response);
+                        var html = "";
+                        if(response.length) {
+                            $.each(response, function (key, value) {
+                                html += "<div class='col-lg-2 col-md-3 col-6' style='margin-bottom: 10px'>";
+                                html += "<div class='card mb-3'>";
+                                html += "<div class='card-body'>";
+                                html += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
+                                html += "<p class='text-center'>" + value.Content + "</p>";
+                                html += "<div class='row'>";
+                                html += "<div class='col'>";
+                                html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
+                                html += "<button class='btn btn-primary' type='button'>Reply</button>";
+                                html += "</div>";
+                                html += "</div>";
+                                html += "<div class='col'>";
+                                html += "<student-reaction></student-reaction>";
+                                html += "</div>"
+                                html += "</div>"
+                                html += "</div>"
+                                html += "</div>"
+                                html += "</div>"
+                            });
+                        }
+                        // } else {
+                        //     html += '<div class="alert alert-warning">';
+                        //     html += 'No records found!';
+                        //     html += '</div>';
+                        // }
+                        $("#responseArea").html(html);
+                    }
+                });
+            }
 
-<div id="responseArea">
-	
-</div>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-<script>
-function getMsg() {
-	$.ajax({
-		type: "GET",
-		url: "../server/getstate.php",
-		success: function (response) {
-			response = JSON.parse(response);
-			var html = "";
-			if(response.length) {
-				$.each(response, function(key, value) {
-					html += "<div class='col-lg-2 col-md-3 col-6' style='margin-bottom: 10px'>";
-						html += "<div class='card mb-3'>";
-							html += "<div class='card-body'>";
-								html += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
-								html += "<p class='text-center'>" + value.Content + "</p>";
-								html += "<div class='row'>";
-									html += "<div class='col'>";
-										html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
-											html += "<button class='btn btn-primary' type='button'>Reply</button>";
-										html += "</div>";
-									html += "</div>";
-									html += "<div class='col'>";
-										html += "<student-reaction></student-reaction>";
-									html += "</div>"
-								html += "</div>"
-							html += "</div>"
-						html += "</div>"
-					html += "</div>"
-				});
-			} else {
-				html += '<div class="alert alert-warning">';
-				html += 'No records found!';
-				html += '</div>';
-			}
-			$("#responseArea").html(html);
-		}
-	});
-}
+            getMsg();
 
-getMsg();
+            var intervalID = window.setInterval(getMsg, 2500);
+        </script>
 
-var intervalID = window.setInterval(getMsg, 2500);
-</script>
+
+        <title>Thought Bubbles</title>
+    </head>
+    <body>
+        <form method="post">
+            <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
+            <input type="hidden" name="interactionType" value="message">
+            <div class="container py-5 h-100">
+                <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                        <div class="card">
+                            <div class='card-body text-center'>
+                                <h3>Question:  </h3>
+                                <h4><?=$question;?></h4><br>
+                                <div class="input-group">
+                                    <span class="input-group-text">Your Response</span>
+                                    <textarea id="answer" name="answer" rows="4" cols="50" class="form-control" aria-label="With textarea" required></textarea>
+                                </div><br>
+                                <button class="btn btn-primary" type="submit">Submit Answer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="responseArea"></div>
+    </body>
 </html>
