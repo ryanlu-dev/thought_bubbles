@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		echo "All fields are required. Please fill them.";
 	} else {
 		// Insert the question into the database
-		$sql = "INSERT INTO interactions VALUES (DEFAULT, -1, ?, -1, 'Question', ?, DEFAULT)";
+		$sql = "INSERT INTO interactions VALUES (DEFAULT, -1, ?, -1, 'question', ?, DEFAULT)";
 		$stmt = $conn->prepare($sql);
 
 		if ($stmt) {
@@ -65,13 +65,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		<textarea id="question_text" name="question_text" rows="4" cols="50" required></textarea><br>
 		<button type="submit">Add Free Response Question</button>
 	</form>
-	<div class="container" id="responseArea">
-
+	<a class="btn btn-primary" href="summary.php" role="button" id="finishSession">Finish session</a>
+	<div class='container-fluid'>
+		<div class="card text-center">
+			<div class="card-header">
+				Current Discussion Question
+			</div>
+			<div class="card-body">
+				<h1 class="card-title" id="qtitle">Waiting...</h5>
+				<!-- <p class="card-text">[extra clarification (optional)]</p> -->
+			</div>
+			<div class="card-footer text-muted">
+				<a href="#" class="btn btn-secondary">Add Another Question</a>
+				<a href="summary.php" class="btn btn-primary">Submit All Questions</a>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<div id="responseArea">
+		</div>
 	</div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 <script>
+function getQuestion() {
+	$.ajax({
+		type: "GET",
+		url: "../server/getquestion.php",
+		success: function (response) {
+			response = JSON.parse(response);
+			var html = "";
+			if(response) {
+				html += response;
+			}
+			$("#qtitle").html(html);
+		}
+	});
+}
+
 function getMsg() {
 	$.ajax({
 		type: "GET",
@@ -102,7 +134,7 @@ function getMsg() {
 				});
 			} else {
 				html += '<div class="alert alert-warning">';
-				html += 'No records found!';
+				html += 'No messages yet!';
 				html += '</div>';
 			}
 			$("#responseArea").html(html);
@@ -110,8 +142,10 @@ function getMsg() {
 	});
 }
 
+getQuestion();
 getMsg();
 
+var q = window.setInterval(getQuestion, 2500);
 var intervalID = window.setInterval(getMsg, 2500);
 </script>
 </html>

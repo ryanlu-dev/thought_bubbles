@@ -50,6 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	// Retrieve form data
 	$interactionType = "message"; // Fixed interaction type for answering the question
 	$answer = $_POST['answer'];
+  // Retrieve the (latest) question for the session from the database	
 	$pre = "SELECT InteractionID FROM interactions WHERE SessionID = ? AND InteractionType = 'Question' ORDER BY Timestamp DESC LIMIT 1";
 	$prestmt = $conn->prepare($pre);
 	$PromptID = -1;
@@ -89,7 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // Close database connection
 $conn->close();
 ?>
-
 <html lang="en">
     <head>
         <meta charset="utf-8" />
