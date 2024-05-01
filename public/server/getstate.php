@@ -18,15 +18,40 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['sessionID'])) {
 	echo "Session code not found.";
 }
 
+function getReplies($sessionID, $parentID) {
+	global $conn;
+
+	$replySql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType = 'reply' AND ParentID = ?";
+	$replyStmt = $conn->prepare($replySql);
+    $replyStmt->bind_param('ii', $sessionID, $parentID);
+    $replyStmt->execute();
+    $replyResult = $replyStmt->get_result();
+    $replies = $replyResult->fetch_all(MYSQLI_ASSOC);
+
+	$replyResult->free_result();
+
+	foreach ($replies as &$reply) {
+		$reply['replies'] = getReplies($sessionID, $reply['InteractionID']);
+	}
+
+	return $replies;
+}
+
 // Get array of all interactions within current session
 $sql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType <> 'Question' AND interactions.Timestamp > (SELECT MAX(Timestamp) FROM interactions WHERE SessionID=? AND interactions.InteractionType = 'Question')";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('ii', $sessionID,$sessionID);
 $stmt->execute();
 $result = $stmt->get_result();
-$row = $result->fetch_all(MYSQLI_ASSOC);
+$rows = $result->fetch_all(MYSQLI_ASSOC);
 $result->free_result();
+foreach ($rows as &$row) {
+    $parentID = $row['InteractionID'];
+
+	$row['replies'] = getReplies($sessionID, $parentID);
+}
+
+echo json_encode($rows);
 $conn->close();
-echo json_encode($row);
 
 ?>
