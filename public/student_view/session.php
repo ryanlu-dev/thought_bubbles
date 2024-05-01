@@ -105,7 +105,7 @@ $conn->close();
         />
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
         <script src="components/reactions.js" type="text/javascript" defer></script>
-        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="../style.css">
         <script>
             function onClickLike(){
                 if(document.getElementById('likeButton').src ===  "../../resources/reactions/heart-fill.svg"){
