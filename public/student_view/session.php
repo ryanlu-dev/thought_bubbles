@@ -106,7 +106,7 @@ $conn->close();
     <form method="POST" action="post_reply.php" id="post-reply-form">
         <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
         <input type="hidden" name="StudentID" value="<?php echo $StudentID; ?>">
-        <input type="hidden" name="studentName" value="<?php echo $studentName; ?>">
+        <input type="hidden" name="studentName" value="<?php echo $StudentName; ?>">
         <input type="hidden" name="displayName" value="<?php echo $displayName; ?>">
         <input type="hidden" name="interactionType" value="reply">
         <div class="card-body form-group">
