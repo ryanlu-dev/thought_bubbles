@@ -33,7 +33,7 @@ if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_
 				$row = $result->fetch_assoc();
 				$question = $row['Content'];
 			} else {
-				echo "No question yet available for this session.";
+				$question =  "No question yet available for this session.";
 			}
 		} else {
 			echo "Error executing query: " . $stmt->error;
@@ -105,7 +105,19 @@ $conn->close();
         />
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
         <script src="components/reactions.js" type="text/javascript" defer></script>
+        <link rel="stylesheet" href="styles.css">
         <script>
+            function onClickLike(){
+                if(document.getElementById('likeButton').src ===  "../../resources/reactions/heart-fill.svg"){
+                    console.log("heart is now blank");
+                    document.getElementById('likeButton').src =  "../../resources/reactions/heart.svg";
+                }
+                if(document.getElementById('likeButton').src ===  "../../resources/reactions/heart.svg"){
+                    console.log("heart is now full");
+                    document.getElementById('likeButton').src =  "../../resources/reactions/heart-fill.svg";
+                }
+            }
+
             function getMsg() {
                 $.ajax({
                     type: "GET",
@@ -129,7 +141,7 @@ $conn->close();
                                 content += "</div>";
                                 content += "</div>";
                                 content += "<div class='col'>";
-                                content += "<student-reaction></student-reaction>";
+                                content += "<button onclick='onClickLike()'><img  id = 'likeButton' src = '../../resources/reactions/heart.svg' alt = 'heart'/></button>";
                                 content += "</div>"
                                 content += "</div>"
                                 content += "</div>"
@@ -148,6 +160,7 @@ $conn->close();
                     }
                 });
             }
+
 
             // getMsg();
             //
@@ -183,6 +196,20 @@ $conn->close();
                                 <script>getMsg()</script>
                         </div>
                 </div>
+            </div>
         </div>
     </body>
+<script>
+    function onClickLike(){
+        if(document.getElementById('likeButton').src.includes("resources/reactions/heart-fill.svg")){
+            console.log("heart is now blank");
+            document.getElementById('likeButton').src =  "../../resources/reactions/heart.svg";
+        }
+        else if(document.getElementById('likeButton').src.includes("resources/reactions/heart.svg")){
+            console.log("heart is now full");
+            document.getElementById('likeButton').src =  "../../resources/reactions/heart-fill.svg";
+        }
+    }
+
+</script>
 </html>
