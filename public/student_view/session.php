@@ -18,10 +18,10 @@ if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_
 	$StudentName = $_SESSION['studentName'];
 	$sessionID = $_SESSION['sessionID'];
 	
-	echo "Student ID : " . $StudentID . "<br>";
-	echo "Session ID : " . $sessionID . "<br>";
-	echo "Session displayName : " . $displayName . "<br>";
-	echo "Session StudentName : " . $StudentName . "<br>";
+//	echo "Student ID : " . $StudentID . "<br>";
+//	echo "Session ID : " . $sessionID . "<br>";
+//	echo "Session displayName : " . $displayName . "<br>";
+//	echo "Session StudentName : " . $StudentName . "<br>";
 	// Retrieve the (latest) question for the session from the database
 	$sql = "SELECT Content FROM interactions WHERE SessionID = ? AND InteractionType = 'Question' ORDER BY Timestamp DESC LIMIT 1";
 	$stmt = $conn->prepare($sql);
@@ -76,9 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	if ($stmt) {
 		$stmt->bind_param("iiiss",$sessionID, $PromptID, $StudentID, $interactionType, $answer);
 		if ($stmt->execute()) {
-			echo "Answer submitted successfully.";
+			$resp =  "Answer submitted successfully.";
 		} else {
-			echo "Error executing query: " . $stmt->error;
+			$resp =  "Error executing query: " . $stmt->error;
 		}
 		$stmt->close();
 	} else {
@@ -104,6 +104,7 @@ $conn->close();
                 crossorigin="anonymous"
         />
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+        <script src="components/reactions.js" type="text/javascript" defer></script>
         <script>
             function getMsg() {
                 $.ajax({
@@ -111,27 +112,31 @@ $conn->close();
                     url: "../server/getstate.php",
                     success: function (response) {
                         response = JSON.parse(response);
-                        var html = "";
+                        var html = $('<div/>');
                         if(response.length) {
                             $.each(response, function (key, value) {
-                                html += "<div class='col-lg-2 col-md-3 col-6' style='margin-bottom: 10px'>";
-                                html += "<div class='card mb-3'>";
-                                html += "<div class='card-body'>";
-                                html += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
-                                html += "<p class='text-center'>" + value.Content + "</p>";
-                                html += "<div class='row'>";
-                                html += "<div class='col'>";
-                                html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
-                                html += "<button class='btn btn-primary' type='button'>Reply</button>";
-                                html += "</div>";
-                                html += "</div>";
-                                html += "<div class='col'>";
-                                html += "<student-reaction></student-reaction>";
-                                html += "</div>"
-                                html += "</div>"
-                                html += "</div>"
-                                html += "</div>"
-                                html += "</div>"
+                                var content = '';
+                                // html += "<div class='col-lg-2 col-md-3 col-6' style='margin-bottom: 10px'>";
+                                content+="<div class = 'col'>";
+                                content += "<div class='card mb-3'>";
+                                content += "<div class='card-body'>";
+                                content += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
+                                content += "<p class='text-center'>" + value.Content + "</p>";
+                                content += "<div class='row'>";
+                                content += "<div class='col'>";
+                                content += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
+                                content += "<button class='btn btn-primary' type='button'>Reply</button>";
+                                content += "</div>";
+                                content += "</div>";
+                                content += "<div class='col'>";
+                                content += "<student-reaction></student-reaction>";
+                                content += "</div>"
+                                content += "</div>"
+                                content += "</div>"
+                                content += "</div>"
+                                content += "</div>"
+                                content += "</div>"
+                                html.append(content);
                             });
                         }
                         // } else {
@@ -144,21 +149,21 @@ $conn->close();
                 });
             }
 
-            getMsg();
-
-            var intervalID = window.setInterval(getMsg, 2500);
+            // getMsg();
+            //
+            // var intervalID = window.setInterval(getMsg, 2500);
         </script>
 
 
         <title>Thought Bubbles</title>
     </head>
     <body>
-        <form method="post">
-            <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
-            <input type="hidden" name="interactionType" value="message">
-            <div class="container py-5 h-100">
+        <div class="container">
                 <div class="row d-flex justify-content-center align-items-center h-100">
                     <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                        <form method="post">
+                            <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
+                            <input type="hidden" name="interactionType" value="message">
                         <div class="card">
                             <div class='card-body text-center'>
                                 <h3>Question:  </h3>
@@ -170,10 +175,14 @@ $conn->close();
                                 <button class="btn btn-primary" type="submit">Submit Answer</button>
                             </div>
                         </div>
+                        </form>
+
                     </div>
+                    <div id="responseArea" class="container text-center">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+                                <script>getMsg()</script>
+                        </div>
                 </div>
-            </div>
-        </form>
-        <div id="responseArea"></div>
+        </div>
     </body>
 </html>
