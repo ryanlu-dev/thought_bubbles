@@ -16,9 +16,9 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['session_name']) && isset
 	$sessionCode = $_SESSION['sessionCode'];
 	$sessionName = $_SESSION['session_name'];
 	$sessionID = $_SESSION['sessionID'];
-	echo "Session Code : ".$sessionCode."<br>";
-	echo "Session Name : ".$sessionName."<br>";
-	echo "Session ID : ".$sessionID."<br>";
+	//echo "Session Code : ".$sessionCode."<br>";
+	//echo "Session Name : ".$sessionName."<br>";
+	//echo "Session ID : ".$sessionID."<br>";
 
 } else {
 	echo "Session code not found.";
@@ -57,6 +57,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 </head>
 <body>
+	<div class="container">
+	<div class="row justify-content-md-center">
+		<div class="col-md-auto">
+		<div class="col text-center">
+			<div>
+				<h4>
+					<p class="text-left">
+					Session Code : <?=$sessionCode;?><br>
+					Session Name : <?=$sessionName;?><br>
+					Session ID : <?=$sessionID;?><br>
+					</p>
+				</h4>
+			</div>
+		</div>
+</div>
+	</div>
+	</div>
+	<div class="maintitle text-center"> 
 	<h1>Create Free Response Question</h1>
 	<!-- HTML form for creating a free response question -->
 	<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
@@ -85,6 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		<div id="responseArea">
 		</div>
 	</div>
+</div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
