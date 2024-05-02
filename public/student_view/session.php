@@ -181,7 +181,14 @@ $conn->close();
         html += "</div>";
         html += "<div class='col>";
         html += "<div class='justify-content-md-end'>";
-        html += "<button><img  id = 'likeButton' src = '../../resources/reactions/heart.svg' alt = 'heart'/></button>";
+        html += "<form method='POST' action='post_likes.php'>";
+        html += "<input type='hidden' name='sessionID' value='<?php echo $sessionID; ?>'>";
+        html += "<input type='hidden' name='StudentID' value='<?php echo $StudentID; ?>'>";
+        html += "<input type='hidden' name='studentName' value='<?php echo $StudentName; ?>'>";
+        html += "<input type='hidden' name='displayName' value='<?php echo $displayName; ?>'>";
+        html += "<input type='hidden' name='interactionType' value='reaction'>";
+        html += "<button type = 'submit'><img src = '../../resources/reactions/heart.svg' alt = 'heart'/></button>"
+        html += "</form>";
         html += "</div>";
         html += "</div>";
         for (let i = 0; i < value.replies.length; i++) {
