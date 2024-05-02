@@ -19,7 +19,7 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['sessionID'])) {
 }
 
 // Retrieve the (latest) question for the session from the database
-	$sql = "SELECT Content FROM interactions WHERE SessionID = ? AND InteractionType = 'Question' ORDER BY Timestamp DESC LIMIT 1";
+	$sql = "SELECT Content, InteractionID FROM interactions WHERE SessionID = ? AND InteractionType = 'Question' ORDER BY Timestamp DESC LIMIT 1";
 	$stmt = $conn->prepare($sql);
 	if ($stmt) {
 		$stmt->bind_param("i", $sessionID);
@@ -28,6 +28,7 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['sessionID'])) {
 			if ($result->num_rows > 0) {
 				$row = $result->fetch_assoc();
 				$question = $row['Content'];
+				$_SESSION['qid'] = $row['InteractionID'];
 				echo json_encode($question);
 			} else {
 				

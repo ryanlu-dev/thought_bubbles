@@ -54,9 +54,10 @@ function isLiked($sessionID, $parentID) {
 }
 
 // Get array of all interactions within current session
-$sql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType ='message' ORDER BY Timestamp DESC";
+$sql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType ='message' AND interactions.ParentID=? ORDER BY Timestamp DESC";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $sessionID);
+$stmt->bind_param('ii', $sessionID, $qid);
+$qid = $_SESSION['qid'];
 $stmt->execute();
 $result = $stmt->get_result();
 $rows = $result->fetch_all(MYSQLI_ASSOC);

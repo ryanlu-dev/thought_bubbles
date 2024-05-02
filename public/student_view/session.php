@@ -271,9 +271,9 @@ $conn->close();
     getMsg();
     getLatestQuestion();
 
-    var q = window.setInterval(getQuestion, 2500);
-    var intervalID = window.setInterval(getMsg, 2500);
-    var intervalID2 = window.setInterval(getLatestQuestion, 2500);
+    var q = window.setInterval(getQuestion, 500);
+    var intervalID = window.setInterval(getMsg, 500);
+    var intervalID2 = window.setInterval(getLatestQuestion, 500);
 </script>
 </body>
 </html>

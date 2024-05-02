@@ -28,7 +28,6 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['session_name']) && isset
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	// Retrieve form data
 	$questionText = $_POST['question_text'];
-
 	// Validate form data (add more validation as needed)
 	if (empty($questionText)) {
 		echo "All fields are required. Please fill them.";
@@ -203,8 +202,8 @@ function getMsg() {
 getQuestion();
 getMsg();
 
-var q = window.setInterval(getQuestion, 2500);
-var intervalID = window.setInterval(getMsg, 2500);
+var q = window.setInterval(getQuestion, 500);
+var intervalID = window.setInterval(getMsg, 500);
 </script>
 </html>
 
