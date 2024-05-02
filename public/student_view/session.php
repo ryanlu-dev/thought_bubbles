@@ -168,7 +168,7 @@ $conn->close();
     function getLatestQuestion() {
     $.ajax({
         type: "GET",
-        url: "../server/getLatestQuestion.php",
+        url: "../server/getlatestquestion.php",
         success: function (response) {
             $("#questionSection").html(response);
         }
