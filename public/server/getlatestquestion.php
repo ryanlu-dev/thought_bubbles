@@ -19,8 +19,8 @@ if ($stmt) {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $question = $row['Content'];
-            echo "<h2>Question:</h2>";
-            echo "<p>" . $question . "</p>";
+            //echo "<h2>Question:</h2>";
+            //echo "<p>" . $question . "</p>";
         } else {
             include '../student_view/waitingroom.html';
             echo "<style>#mainContent { display: none; }</style>";
