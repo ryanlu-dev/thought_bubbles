@@ -17,11 +17,12 @@ if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_
     $displayName = $_SESSION['displayName'];
     $StudentName = $_SESSION['studentName'];
     $sessionID = $_SESSION['sessionID'];
-
+    /*
     echo "Student ID : " . $StudentID . "<br>";
     echo "Session ID : " . $sessionID . "<br>";
     echo "Session displayName : " . $displayName . "<br>";
     echo "Session StudentName : " . $StudentName . "<br>";
+    */
 } else {
     echo "Session code not found.";
 }
@@ -41,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $row = $res->fetch_assoc();
                 $PromptID = $row['InteractionID'];
             } else {
-                echo "Cannot find interaction";
+                //echo "Cannot find interaction";
             }
         } else {
             echo "Error executing query: " . $prestmt->error;
@@ -71,16 +72,21 @@ $conn->close();
 ?>
 
 <html>
+    <div id="questionSection"></div>
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script src="components/reactions.js" type="text/javascript" defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Discussion Time!</title>
 </head>
 <body>
+<div id="mainContent">
 <div class='container-fluid'>
+    <h4 class="display-4 text-center" id="showName"><?=$displayName;?></h4>
     <div class="card text-center">
         <div class="card-header">
             Current Discussion Question
@@ -95,19 +101,27 @@ $conn->close();
 </div>
 <br>
 <!-- Form for answering the question -->
+<div class="container-fluid">
 <form method="post">
     <div class="row d-flex justify-content-center align-items-center">
-        <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
-        <input type="hidden" name="interactionType" value="message">
-        <div class = "card">
-            <div class="input-group input-group-lg justify-content-center">
-                <span class="input-group-text" id="inputGroup-sizing-lg">Answer Here</span>
-                <textarea id="answer" name="answer" aria-label = 'Answer Here' required></textarea><br>
+        <div class="col-lg-6">
+            <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
+            <input type="hidden" name="interactionType" value="message">
+            <div class = "card">
+                <div class="card-body">
+                    <div class="input-group justify-content-center">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Answer Here</span>
+                        <textarea id="answer" name="answer" aria-label = 'Answer Here' required></textarea><br><br>
+                    </div>
+                    <div class="input-group justify-content-center my-4">
+                        <button type="submit" class="btn btn-primary" >Submit Answer</button>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary" >Submit Answer</button>
         </div>
     </div>
 </form>
+</div>
 
 <div id="replyOverlay" class="overlay-div overflow-hidden d-none"></div>
 <div id="replyBox" class="card container overlay-box d-none p-0">
@@ -135,7 +149,7 @@ $conn->close();
 <div id="responseArea">
 
 </div>
-
+</div>
 <script>
     function closeReplyBox() {
         $('#replyOverlay').addClass("d-none");
@@ -150,6 +164,16 @@ $conn->close();
         $('#content-to-reply').html(html);
         $('#post-reply-form').prepend(formInput);
     }
+
+    function getLatestQuestion() {
+    $.ajax({
+        type: "GET",
+        url: "../server/getLatestQuestion.php",
+        success: function (response) {
+            $("#questionSection").html(response);
+        }
+    });
+}
 
     function getQuestion() {
         $.ajax({
@@ -186,8 +210,17 @@ $conn->close();
         html += "<input type='hidden' name='StudentID' value='<?php echo $StudentID; ?>'>";
         html += "<input type='hidden' name='studentName' value='<?php echo $StudentName; ?>'>";
         html += "<input type='hidden' name='displayName' value='<?php echo $displayName; ?>'>";
+        html += "<input type='hidden' name='parentID' value='" + value.InteractionID + "'>";
         html += "<input type='hidden' name='interactionType' value='reaction'>";
-        html += "<button type = 'submit'><img src = '../../resources/reactions/heart.svg' alt = 'heart'/></button>"
+        html += "<button type = 'submit'><img src = '../../resources/reactions/";
+		if (value.isLiked == 0) {
+			html += "heart.svg'";
+		}
+		else {
+			html += "heart-fill.svg'";
+		}
+		html += " alt = 'heart'/></button>";
+        html += value.isLiked;
         html += "</form>";
         html += "</div>";
         html += "</div>";
@@ -236,9 +269,11 @@ $conn->close();
 
     getQuestion();
     getMsg();
+    getLatestQuestion();
 
     var q = window.setInterval(getQuestion, 2500);
     var intervalID = window.setInterval(getMsg, 2500);
+    var intervalID2 = window.setInterval(getLatestQuestion, 2500);
 </script>
 </body>
 </html>
