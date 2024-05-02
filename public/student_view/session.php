@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $row = $res->fetch_assoc();
                 $PromptID = $row['InteractionID'];
             } else {
-                echo "Cannot find interaction";
+                //echo "Cannot find interaction";
             }
         } else {
             echo "Error executing query: " . $prestmt->error;
@@ -77,6 +77,8 @@ $conn->close();
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script src="components/reactions.js" type="text/javascript" defer></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Discussion Time!</title>
 </head>
 <body>
