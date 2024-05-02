@@ -186,8 +186,16 @@ $conn->close();
         html += "<input type='hidden' name='StudentID' value='<?php echo $StudentID; ?>'>";
         html += "<input type='hidden' name='studentName' value='<?php echo $StudentName; ?>'>";
         html += "<input type='hidden' name='displayName' value='<?php echo $displayName; ?>'>";
+        html += "<input type='hidden' name='parentID' value='" + value.InteractionID + "'>";
         html += "<input type='hidden' name='interactionType' value='reaction'>";
-        html += "<button type = 'submit'><img src = '../../resources/reactions/heart.svg' alt = 'heart'/></button>"
+        html += "<button type = 'submit'><img src = '../../resources/reactions/";
+		if (value.isLiked == 0) {
+			html += "heart.svg'";
+		}
+		else {
+			html += "heart-fill.svg'";
+		}
+		html += " alt = 'heart'/></button>";
         html += "</form>";
         html += "</div>";
         html += "</div>";
