@@ -190,7 +190,7 @@ function getMsg() {
                         }
                     });
                 } else {
-                    html += '<div class="alert alert-warning">';
+                    html += '<div class="alert alert-warning my-4">';
                     html += 'No messages yet!';
                     html += '</div>';
                 }
