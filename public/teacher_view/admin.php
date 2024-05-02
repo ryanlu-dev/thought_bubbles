@@ -99,10 +99,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			</div>
 		</div>
 	</div>
-	<div class="container-fluid">
+
 		<div id="responseArea">
+
 		</div>
-	</div>
+
 </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
@@ -123,42 +124,52 @@ function getQuestion() {
 	});
 }
 
+function displayCard(value) {
+          var html = "";
+          html += "<div style='margin-bottom: 10px'>";
+          html += "<div class='card mb-3 mt-3' id='msg" + value.InteractionID + "'>";
+          html += "<div class='card-body'>";
+          html += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
+          html += "<p class='text-center'>" + value.Content + "</p>";
+          html += "<div class='row'>";
+          html += "<div class='col'>";
+          html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
+          html += "<button class='btn btn-primary' type='button' onclick='openReplyBox(\"" + value.DisplayName + "\", \"" + value.Content + "\", \"" + value.InteractionID + "\")'>Reply</button>";
+          html += "</div>";
+          html += "</div>";
+          html += "<div class='col'>";
+          html += "<student-reaction></student-reaction>";
+          html += "</div>";
+          html += "</div>";
+          for (let i = 0; i < value.replies.length; i++) {
+              var reply = value.replies[i];
+              html += displayCard(reply);
+          }
+          html += "</div>";
+          html += "</div>";
+          html += "</div>";
+          return html;
+      }
+
 function getMsg() {
 	$.ajax({
-		type: "GET",
-		url: "../server/getstate.php",
-		success: function (response) {
-			response = JSON.parse(response);
-			var html = "";
-			if(response.length) {
-				$.each(response, function(key, value) {
-					html += "<div class='col-lg-2 col-md-3 col-6' style='margin-bottom: 10px'>";
-						html += "<div class='card mb-3'>";
-							html += "<div class='card-body'>";
-								html += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
-								html += "<p class='text-center'>" + value.Content + "</p>";
-								html += "<div class='row'>";
-									html += "<div class='col'>";
-										html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
-											html += "<button class='btn btn-primary' type='button'>Reply</button>";
-										html += "</div>";
-									html += "</div>";
-									html += "<div class='col'>";
-										html += "<student-reaction></student-reaction>";
-									html += "</div>"
-								html += "</div>"
-							html += "</div>"
-						html += "</div>"
-					html += "</div>"
-				});
-			} else {
-				html += '<div class="alert alert-warning">';
-				html += 'No messages yet!';
-				html += '</div>';
-			}
-			$("#responseArea").html(html);
-		}
-	});
+              type: "GET",
+              url: "../server/getstate.php",
+              success: function (response) {
+                  response = JSON.parse(response);
+                  var html = "";
+                  if(response.length) {
+                      $.each(response, function(key, value) {
+                          html += displayCard(value);
+                      });
+                  } else {
+                      html += '<div class="alert alert-warning">';
+                      html += 'No messages yet!';
+                      html += '</div>';
+                  }
+                  $("#responseArea").html(html);
+              }
+          });
 }
 
 getQuestion();
