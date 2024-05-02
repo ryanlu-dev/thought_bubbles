@@ -32,9 +32,28 @@ function getReplies($sessionID, $parentID) {
 
     foreach ($replies as &$reply) {
         $reply['replies'] = getReplies($sessionID, $reply['InteractionID']);
+        $reply['isLiked'] = isLiked($sessionID, $reply['InteractionID']);
     }
 
     return $replies;
+}
+
+function isLiked($sessionID, $parentID) {
+    global $conn;
+
+    $sql="SELECT * FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType = 'reaction' AND ParentID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ii', $sessionID, $parentID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $likes = $result->fetch_all(MYSQLI_ASSOC);
+
+    $result->free_result();
+
+	if (sizeof($likes) > 0) {
+		return true;
+	}
+	else return false;
 }
 
 // Get array of all interactions within current session
@@ -49,6 +68,7 @@ foreach ($rows as &$row) {
     $parentID = $row['InteractionID'];
 
     $row['replies'] = getReplies($sessionID, $parentID);
+    $row['isLiked'] = isLiked($sessionID, $parentID);
 }
 
 echo json_encode($rows);
