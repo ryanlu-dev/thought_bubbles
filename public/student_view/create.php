@@ -7,6 +7,7 @@ $config = parse_ini_file("../../../database/db_config.ini");
 $conn = new mysqli($config["servername"], $config["username"], $config["password"], $config["dbname"]);
 
 // TODO: Delete these blocks 
+/*
 if (isset($_SESSION['sessionCode'])) {
 	$sessionCode = $_SESSION['sessionCode'];
 	echo "Session Code : ".$sessionCode."<br>";
@@ -21,7 +22,7 @@ if (isset($_SESSION['sessionID'])) {
 } else {
 	echo "Session ID not found ";
 }
-
+*/
 
 // Check connection
 if ($conn->connect_error) {

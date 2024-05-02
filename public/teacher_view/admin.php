@@ -62,13 +62,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		<div class="col-md-auto">
 		<div class="col text-center">
 			<div>
-				<h4>
-					<p class="text-left">
-					Session Code : <?=$sessionCode;?><br>
-					Session Name : <?=$sessionName;?><br>
-					Session ID : <?=$sessionID;?><br>
-					</p>
-				</h4>
+				<p class="text-center display-4">
+				Session Code : <?=$sessionCode;?><br>
+				Session Name : <?=$sessionName;?><br>
+				<!-- Session ID : <?=$sessionID;?><br> -->
+				</p>
 			</div>
 		</div>
 </div>
@@ -79,11 +77,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	<!-- HTML form for creating a free response question -->
 	<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
 		<input type="hidden" name="question_type" value="free_response">
-		<label for="question_text">Question Text:</label><br>
+		<!-- <label for="question_text">Question Text:</label><br> -->
 		<textarea id="question_text" name="question_text" rows="4" cols="50" required></textarea><br>
-		<button type="submit">Add Free Response Question</button>
+		<button class="btn btn-primary my-3" type="submit">Add Free Response Question</button>
 	</form>
-	<a class="btn btn-primary" href="summary.php" role="button" id="finishSession">Finish session</a>
+	<!-- <a class="btn btn-primary" href="summary.php" role="button" id="finishSession">Finish session</a> -->
 	<div class='container-fluid'>
 		<div class="card text-center">
 			<div class="card-header">
@@ -123,43 +121,84 @@ function getQuestion() {
 	});
 }
 
-function getMsg() {
-	$.ajax({
-		type: "GET",
-		url: "../server/getstate.php",
-		success: function (response) {
-			response = JSON.parse(response);
-			var html = "";
-			if(response.length) {
-				$.each(response, function(key, value) {
-					html += "<div class='col-lg-2 col-md-3 col-6' style='margin-bottom: 10px'>";
-						html += "<div class='card mb-3'>";
-							html += "<div class='card-body'>";
-								html += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
-								html += "<p class='text-center'>" + value.Content + "</p>";
-								html += "<div class='row'>";
-									html += "<div class='col'>";
-										html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
-											html += "<button class='btn btn-primary' type='button'>Reply</button>";
-										html += "</div>";
-									html += "</div>";
-									html += "<div class='col'>";
-										html += "<student-reaction></student-reaction>";
-									html += "</div>"
-								html += "</div>"
-							html += "</div>"
-						html += "</div>"
-					html += "</div>"
-				});
-			} else {
-				html += '<div class="alert alert-warning">';
-				html += 'No messages yet!';
-				html += '</div>';
-			}
-			$("#responseArea").html(html);
+function displayCard(value) {
+        var html = "";
+        html += "<div class='col-sm mb-3' style='margin-bottom: 10px'>";
+        html += "<div class='card mb-3'  id='msg" + value.InteractionID + "'>";
+        html += "<div class='card-body'>";
+        html += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
+        html += "<p class='text-center'>" + value.Content + "</p>";
+        html += "<div class='row'>";
+        html += "<div class='col'>";
+        //html += "<div class='d-grid gap-2 d-md-block justify-content-md-start'>";
+        //html += "<button class='btn btn-primary' type='button' onclick='openReplyBox(\"" + value.DisplayName + "\", \"" + value.Content + "\", \"" + value.InteractionID + "\")'>Reply</button><br><br>";
+        //html += "</div>";
+        html += "</div>";
+        html += "<div class='col>";
+        html += "<div class='justify-content-md-end'>";
+        html += "<form method='POST' action='post_likes.php'>";
+				/*
+        html += "<input type='hidden' name='sessionID' value='<?php echo $sessionID; ?>'>";
+        html += "<input type='hidden' name='StudentID' value='<?php echo $StudentID; ?>'>";
+        html += "<input type='hidden' name='studentName' value='<?php echo $StudentName; ?>'>";
+        html += "<input type='hidden' name='displayName' value='<?php echo $displayName; ?>'>";
+        html += "<input type='hidden' name='parentID' value='" + value.InteractionID + "'>";
+        html += "<input type='hidden' name='interactionType' value='reaction'>";
+				*/
+        html += "<img src = '../../resources/reactions/";
+		if (value.isLiked == 0) {
+			html += "heart.svg'";
 		}
-	});
-}
+		else {
+			html += "heart-fill.svg'";
+		}
+		html += " alt = 'heart'/></button>";
+        html += value.isLiked;
+        html += "</form>";
+        html += "</div>";
+        html += "</div>";
+        for (let i = 0; i < value.replies.length; i++) {
+            var reply = value.replies[i];
+            html += displayCard(reply);
+        }
+        html += "</div>";
+        html += "</div>";
+        html += "</div>";
+        return html;
+    }
+
+function getMsg() {
+        $.ajax({
+            type: "GET",
+            url: "../server/getstate.php",
+            success: function (response) {
+                response = JSON.parse(response);
+                var html = "<div class = 'container-fluid'>";
+                var count = 0;
+                if(response.length) {
+                    $.each(response, function(key, value) {
+                        count+=1;
+                        if(count === 2){
+                            html += displayCard(value);
+                            html+="</div>";
+                            count = 0;
+                        }
+                        else {
+                            html += "<div class='row''>";
+                            html += displayCard(value);
+
+                        }
+                    });
+                } else {
+                    html += '<div class="alert alert-warning">';
+                    html += 'No messages yet!';
+                    html += '</div>';
+                }
+                html+= "</div>";
+                $("#responseArea").html(html);
+            }
+        });
+    }
 
 getQuestion();
 getMsg();

@@ -17,11 +17,12 @@ if (isset($_SESSION['StudentID']) && isset($_SESSION['displayName']) && isset($_
     $displayName = $_SESSION['displayName'];
     $StudentName = $_SESSION['studentName'];
     $sessionID = $_SESSION['sessionID'];
-
+    /*
     echo "Student ID : " . $StudentID . "<br>";
     echo "Session ID : " . $sessionID . "<br>";
     echo "Session displayName : " . $displayName . "<br>";
     echo "Session StudentName : " . $StudentName . "<br>";
+    */
 } else {
     echo "Session code not found.";
 }
@@ -71,6 +72,7 @@ $conn->close();
 ?>
 
 <html>
+    <div id="questionSection"></div>
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="../style.css">
@@ -80,7 +82,9 @@ $conn->close();
     <title>Discussion Time!</title>
 </head>
 <body>
+<div id="mainContent">
 <div class='container-fluid'>
+    <h4 class="display-4 text-center" id="showName"><?=$displayName;?></h4>
     <div class="card text-center">
         <div class="card-header">
             Current Discussion Question
@@ -95,19 +99,27 @@ $conn->close();
 </div>
 <br>
 <!-- Form for answering the question -->
+<div class="container-fluid">
 <form method="post">
     <div class="row d-flex justify-content-center align-items-center">
-        <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
-        <input type="hidden" name="interactionType" value="message">
-        <div class = "card">
-            <div class="input-group input-group-lg justify-content-center">
-                <span class="input-group-text" id="inputGroup-sizing-lg">Answer Here</span>
-                <textarea id="answer" name="answer" aria-label = 'Answer Here' required></textarea><br>
+        <div class="col-lg-6">
+            <input type="hidden" name="sessionID" value="<?php echo $sessionID; ?>">
+            <input type="hidden" name="interactionType" value="message">
+            <div class = "card">
+                <div class="card-body">
+                    <div class="input-group justify-content-center">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Answer Here</span>
+                        <textarea id="answer" name="answer" aria-label = 'Answer Here' required></textarea><br><br>
+                    </div>
+                    <div class="input-group justify-content-center my-4">
+                        <button type="submit" class="btn btn-primary" >Submit Answer</button>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary" >Submit Answer</button>
         </div>
     </div>
 </form>
+</div>
 
 <div id="replyOverlay" class="overlay-div overflow-hidden d-none"></div>
 <div id="replyBox" class="card container overlay-box d-none p-0">
@@ -135,7 +147,7 @@ $conn->close();
 <div id="responseArea">
 
 </div>
-
+</div>
 <script>
     function closeReplyBox() {
         $('#replyOverlay').addClass("d-none");
@@ -150,6 +162,16 @@ $conn->close();
         $('#content-to-reply').html(html);
         $('#post-reply-form').prepend(formInput);
     }
+
+    function getLatestQuestion() {
+    $.ajax({
+        type: "GET",
+        url: "../server/getLatestQuestion.php",
+        success: function (response) {
+            $("#questionSection").html(response);
+        }
+    });
+}
 
     function getQuestion() {
         $.ajax({
@@ -196,6 +218,7 @@ $conn->close();
 			html += "heart-fill.svg'";
 		}
 		html += " alt = 'heart'/></button>";
+        html += value.isLiked;
         html += "</form>";
         html += "</div>";
         html += "</div>";
@@ -244,9 +267,11 @@ $conn->close();
 
     getQuestion();
     getMsg();
+    getLatestQuestion();
 
     var q = window.setInterval(getQuestion, 2500);
     var intervalID = window.setInterval(getMsg, 2500);
+    var intervalID2 = window.setInterval(getLatestQuestion, 2500);
 </script>
 </body>
 </html>
