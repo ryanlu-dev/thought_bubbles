@@ -21,7 +21,7 @@ if (isset($_SESSION['sessionCode']) && isset($_SESSION['sessionID'])) {
 function getReplies($sessionID, $parentID) {
     global $conn;
 
-    $replySql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType = 'reply' AND ParentID = ?";
+    $replySql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType = 'reply' AND ParentID = ? ORDER BY Timestamp DESC";
     $replyStmt = $conn->prepare($replySql);
     $replyStmt->bind_param('ii', $sessionID, $parentID);
     $replyStmt->execute();
@@ -41,7 +41,7 @@ function getReplies($sessionID, $parentID) {
 function isLiked($sessionID, $parentID) {
     global $conn;
 
-    $sql="SELECT * FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType = 'reaction' AND ParentID = ?";
+    $sql="SELECT * FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType = 'reaction' AND ParentID = ? ORDER BY Timestamp DESC";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('ii', $sessionID, $parentID);
     $stmt->execute();
@@ -50,14 +50,11 @@ function isLiked($sessionID, $parentID) {
 
     $result->free_result();
 
-	if (sizeof($likes) > 0) {
-		return true;
-	}
-	else return false;
+    return sizeof($likes);
 }
 
 // Get array of all interactions within current session
-$sql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType ='message'";
+$sql="SELECT interactions.InteractionID, interactions.ParentID, students.DisplayName, interactions.InteractionType, interactions.Content FROM interactions INNER JOIN students ON students.StudentID = interactions.StudentID WHERE interactions.SessionID=? AND interactions.InteractionType ='message' ORDER BY Timestamp DESC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $sessionID);
 $stmt->execute();
