@@ -168,7 +168,7 @@ $conn->close();
 
     function displayCard(value) {
         var html = "";
-        html += "<div class='col-sm-6 mb-3 mb-sm-0' style='margin-bottom: 10px'>";
+        html += "<div class='col-sm mb-3' style='margin-bottom: 10px'>";
         html += "<div class='card mb-3'  id='msg" + value.InteractionID + "'>";
         html += "<div class='card-body'>";
         html += "<p class='text-center'><b>" + value.DisplayName + "</b></p>";
